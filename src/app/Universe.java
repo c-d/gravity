@@ -32,7 +32,7 @@ public class Universe {
 		view = new View();
 		bodies = new ArrayList<Body>();
 		destroyedBodies = new ArrayList<Body>();
-		sun = new Body("Sol", width / 2, height / 2, 0, Config.SUN_MASS, Config.COLOR_SUN);
+		sun = new Body("Sol", width / 2, height / 2, 0, 0, Config.SUN_MASS, Config.COLOR_SUN);
 	}
 
 	public Body createRandomBody() {
@@ -44,9 +44,13 @@ public class Universe {
 	}
 	
 	public Body createBody(int x, int y) {
-		Body body = new Body(BodyNames.getName(), x, y, Config.NODE_DEFAULT_VELOCITY);
+		Body body = new Body(BodyNames.getName(), x, y, Config.NODE_DEFAULT_VELOCITY, getRandomDirection());
 		bodies.add(body);
 		return body;
+	}
+	
+	private float getRandomDirection() {
+		return rand.nextFloat() * 6;
 	}
 	
 	public Body getBodyAt(int x, int y) {
@@ -73,8 +77,8 @@ public class Universe {
 		}
 		sun.draw(g);
 		g.setColor(Config.COLOR_TEXT);
-		g.drawString("Sun mass: " + sun.getMass(), 10, height - 35);
-		g.drawString("Bodies: " + bodies.size(), 10, height - 20);
+		//g.drawString("Sun mass: " + sun.getMass(), 10, height - 35);
+		/*
 		if (selectedBody != null) {
 			g.drawString(selectedBody.name, 10, height - 115);
 			g.drawString("Age: " + selectedBody.age, 10, height - 100);
@@ -82,18 +86,21 @@ public class Universe {
 			g.drawString("Position: " + (int)selectedBody.getX() + "," + (int)selectedBody.getY(), 10, height - 70);
 			g.drawString("Velocity:" + (float)selectedBody.velocity.x + "," + selectedBody.velocity.y, 10, height - 55);
 		}
+		*/
 	}
 
 	private void drawGravityLineBetweenBodies(Graphics g, Body b1, Body b2) {
 		float gravity = b1.getGravityMagnitudeTowardBody(b2);
-		float alpha = gravity * 1000;
-		Color newColor = new Color(Config.COLOR_BODY.r, Config.COLOR_BODY.g, Config.COLOR_BODY.b, alpha);
-		g.setColor(newColor);
-		g.setLineWidth(4);
-		
-		//System.out.println(gravity + " - " + alpha);
-		g.drawLine(b1.getX(), b1.getY(), b2.getX(), b2.getY());
-		g.resetLineWidth();
+		float alpha = gravity * 100;
+		if (alpha > 0.01) {
+			Color newColor = new Color(Config.COLOR_BODY.r, Config.COLOR_BODY.g, Config.COLOR_BODY.b, alpha);
+			g.setColor(newColor);
+			g.setLineWidth(4);
+			
+			//System.out.println(gravity + " - " + alpha);
+			g.drawLine(b1.getX(), b1.getY(), b2.getX(), b2.getY());
+			g.resetLineWidth();
+		}
 	}
 	
 	public void update() {
@@ -128,6 +135,10 @@ public class Universe {
 
 	public void clearAllBodies() {
 		bodies.clear();
+	}
+
+	public int getNumberOfBodies() {
+		return bodies.size();
 	}
 
 }

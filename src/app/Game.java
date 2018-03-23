@@ -39,13 +39,15 @@ public class Game extends BasicGame {
 		g.translate((screenWidth / 2) - (screenWidth / 2) * zoomLevel, (screenHeight / 2) - (screenHeight / 2) * zoomLevel);
 		g.scale(zoomLevel, zoomLevel);
 		world.draw(g);
+		g.resetTransform();
+		g.drawString("Bodies: " + world.getNumberOfBodies(), 10, screenHeight - 20);
+		g.drawString("Zoom: " + (int)(zoomLevel * 100) + "%", 10, screenHeight - 35);
 	}
 
 	@Override
 	public void init(GameContainer gc) throws SlickException {
 		BodyNames.init();
 		world = new Universe(screenWidth, screenHeight);
-		//bg = new Image("res/basepack/bg.png");
 	}
 
 	@Override
@@ -94,12 +96,12 @@ public class Game extends BasicGame {
 			stepUpdate(gc, delta);
 		}
 		// Zoom events
-		if (input.isKeyDown(Input.KEY_DOWN)) {
-			zoomLevel -= 0.001;
+		if (input.isKeyDown(Input.KEY_DOWN) && zoomLevel > 0) {
+			zoomLevel -= 0.01;
 			System.out.println("New zoom level: " + zoomLevel);
 		}
 		if (input.isKeyDown(Input.KEY_UP)) {
-			zoomLevel += 0.001;
+			zoomLevel += 0.01;
 			System.out.println("New zoom level: " + zoomLevel);
 		}
 		if (input.isKeyDown(Input.KEY_RCONTROL)) {

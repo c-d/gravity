@@ -30,16 +30,16 @@ public class Body {
 		return circle.radius;
 	}
 
-	public Body(String name, int x, int y, float speed) {
-		this(name, x, y, speed, (float) (Math.random() * Config.NODE_INITIAL_MASS), Config.COLOR_BODY);
+	public Body(String name, int x, int y, float speed, float direction) {
+		this(name, x, y, speed, direction, (float) (Math.random() * Config.NODE_INITIAL_MASS), Config.COLOR_BODY);
 	}
 	
-	public Body(String name, int x, int y, float speed, float mass, Color color) {
+	public Body(String name, int x, int y, float speed, float direction, float mass, Color color) {
 		circle = new Circle((float)x, (float)y, mass * Config.MASS_TO_SIZE_MULTIPLIER);
 		position = new Vector2f((float)x, (float)y);
 		this.velocity = new Vector2f();
 		this.setVectorLength(velocity, speed);
-		this.setVectorAngle(velocity, (float) -Math.PI); // Up
+		this.setVectorAngle(velocity, direction); // Up
 		this.mass = mass;
 		this.name = name;
 		this.color = color;
