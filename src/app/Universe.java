@@ -21,6 +21,8 @@ public class Universe {
 	private View view;
 	private Random rand = new Random();
 	
+	private BHTree tree;
+	
 	public class View {
 		private int xOffset = 0;
 		private int yOffset = 0;
@@ -87,6 +89,9 @@ public class Universe {
 			g.drawString("Velocity:" + (float)selectedBody.velocity.x + "," + selectedBody.velocity.y, 10, height - 55);
 		}
 		*/
+		g.setColor(Color.green);
+		BHTree.create(bodies, width, height).draw(g);
+		g.setColor(Color.green);
 	}
 
 	private void drawGravityLineBetweenBodies(Graphics g, Body b1, Body b2) {
