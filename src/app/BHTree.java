@@ -32,7 +32,7 @@ public class BHTree {
 	
 	private Body containedBody;
 	
-	
+	private float mass;
 	Point centerOfMass;
 	
 	/**
@@ -49,6 +49,7 @@ public class BHTree {
 		xl = xLarge;
 		ys = ySmall;
 		yl = yLarge;
+		mass = 0;
 	}
 	
 	public static BHTree create(List<Body> bodies, int width, int height) {
@@ -70,6 +71,10 @@ public class BHTree {
 		if (upperLeft == null) {	// Hasn't been split yet (this may be a leaf node)
 			if (containedBody == null) {
 				containedBody = b;
+				// As a leaf the total mass is exactly the mass of the contained body.
+				mass = containedBody.getMass();
+				// Return early so mass is not added twice.
+				return true;
 			}
 			else {	// State 3, need to move to state 2.
 				if (b.getX() == containedBody.getX() && b.getY() == containedBody.getY()) {
@@ -90,6 +95,7 @@ public class BHTree {
 				
 				Body originalBody = containedBody;
 				containedBody = null;
+				mass = 0;
 				// Now that subnodes have been created, we can fill them with recursion.
 				this.insert(originalBody);
 				this.insert(b);
@@ -121,12 +127,15 @@ public class BHTree {
 				}
 			}
 		}
+		// Mass is now contained in a child tree
+		mass += b.getMass();
 		return true;
 	}
 	
 	public float getMass() {
 		if (upperLeft == null) {
 			if (containedBody == null) {
+				
 				return 0f;
 			}
 			else return containedBody.getMass();
@@ -135,6 +144,7 @@ public class BHTree {
 			return upperLeft.getMass() + upperRight.getMass() + lowerLeft.getMass() + lowerRight.getMass();
 		}
 	}
+	private int timesCalled = 0;
 	
 	public void draw(Graphics g) {
 		if (upperLeft != null) {
@@ -143,12 +153,15 @@ public class BHTree {
 			lowerLeft.draw(g);
 			lowerRight.draw(g);
 		}
-		float mass = getMass();
-		if (mass > 0) {
-			g.setLineWidth(mass * 0.2f);
-			
+		float retrievedMass = getMass();
+		if (mass != retrievedMass) {
+			boolean stop = true;
+		}
+		if (mass > 0) {	
 			Color c = Color.green;
-			g.setColor(new Color(c.r, c.g, c.b, (float) mass * 20f));
+			g.setColor(new Color(c.r, c.g, c.b, (float) mass * 1.7f));
+			g.setLineWidth(mass * 0.01f);		
+			
 			g.draw(new Rectangle(xs, ys, xl - xs , yl - ys));
 			g.resetLineWidth();
 		}

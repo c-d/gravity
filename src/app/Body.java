@@ -31,7 +31,7 @@ public class Body {
 	}
 	
 	protected float getMass() {
-		return circle.radius;
+		return mass;
 	}
 
 	public Body(String name, int x, int y, float speed, float direction) {
