@@ -22,6 +22,7 @@ public class Universe {
 	private Random rand = new Random();
 	
 	private BHTree tree;
+	private boolean drawQuadTree = true;
 	
 	public class View {
 		private int xOffset = 0;
@@ -89,10 +90,8 @@ public class Universe {
 			g.drawString("Velocity:" + (float)selectedBody.velocity.x + "," + selectedBody.velocity.y, 10, height - 55);
 		}
 		*/
-		if (tree != null) {
-			g.setColor(Color.green);
+		if (drawQuadTree && tree != null) {
 			tree.draw(g);
-			g.setColor(Color.green);
 		}
 	}
 
@@ -143,6 +142,10 @@ public class Universe {
 
 	public int getNumberOfBodies() {
 		return bodies.size();
+	}
+
+	public void toggleDrawQuadTree() {
+		drawQuadTree = !drawQuadTree;
 	}
 
 }

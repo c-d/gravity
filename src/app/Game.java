@@ -101,6 +101,9 @@ public class Game extends BasicGame {
 			zoomLevel = 1;
 			System.out.println("New zoom level: " + zoomLevel);
 		}
+		if (input.isKeyPressed(Input.KEY_Q)) {
+			world.toggleDrawQuadTree();
+		}
 	}
 
 	public static void main(String[] args) {

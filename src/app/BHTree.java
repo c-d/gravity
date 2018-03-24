@@ -2,6 +2,7 @@ package app;
 
 import java.util.List;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
@@ -33,7 +34,6 @@ public class BHTree {
 	
 	
 	Point centerOfMass;
-	int mass;
 	
 	/**
 	 * 
@@ -124,6 +124,18 @@ public class BHTree {
 		return true;
 	}
 	
+	public float getMass() {
+		if (upperLeft == null) {
+			if (containedBody == null) {
+				return 0f;
+			}
+			else return containedBody.getMass();
+		}
+		else {
+			return upperLeft.getMass() + upperRight.getMass() + lowerLeft.getMass() + lowerRight.getMass();
+		}
+	}
+	
 	public void draw(Graphics g) {
 		if (upperLeft != null) {
 			upperLeft.draw(g);
@@ -131,7 +143,15 @@ public class BHTree {
 			lowerLeft.draw(g);
 			lowerRight.draw(g);
 		}
-		g.draw(new Rectangle(xs, ys, xl - xs , yl - ys));
+		float mass = getMass();
+		if (mass > 0) {
+			g.setLineWidth(mass * 0.2f);
+			
+			Color c = Color.green;
+			g.setColor(new Color(c.r, c.g, c.b, (float) mass * 20f));
+			g.draw(new Rectangle(xs, ys, xl - xs , yl - ys));
+			g.resetLineWidth();
+		}
 	}
 
 }
