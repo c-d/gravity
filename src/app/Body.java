@@ -18,6 +18,10 @@ public class Body {
 	float age = 0.0f;
 	protected Color color;
 	
+	public String toString() {
+		return name + " [" + getX() + ", " + getY() + "]";
+	}
+	
 	protected float getX() {
 		return circle.getCenterX();
 	}

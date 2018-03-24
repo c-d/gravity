@@ -73,39 +73,52 @@ public class BHTree {
 			}
 			else {	// State 3, need to move to state 2.
 				if (b.getX() == containedBody.getX() && b.getY() == containedBody.getY()) {
-					System.out.println("Two bodies in exactly the same position will lead to infinite recursion"
-							+ ", so the second node was not placed in the quad tree.");
+					// Two points in exactly the same position - will infinitely recurse.
+					return false;
+				} 
+				if (xl - xs <= 1 || yl - ys <= 1) {
+					// We can't split this tree any further.
+					// Will just need to give up (eventually gravity will fling close bodies apart anyway so this will resolve itself).
+					// TODO: If gravity requires tree nodes... will we be able to calculate differences between bodies like this?
 					return false;
 				}
-				upperLeft = new BHTree(xs, 0, centerX, centerY);
-				upperRight = new BHTree(centerX, 0, xl, centerY);
+				// BHTree(xLeft, yTop, xRight, yBottom
+				upperLeft = new BHTree(xs, ys, centerX, centerY);
+				upperRight = new BHTree(centerX, ys, xl, centerY);
 				lowerLeft = new BHTree(xs, centerY, centerX, yl);
 				lowerRight = new BHTree(centerX, centerY, xl, yl);				
 				
 				Body originalBody = containedBody;
 				containedBody = null;
 				// Now that subnodes have been created, we can fill them with recursion.
-				this.insert(b);
 				this.insert(originalBody);
+				this.insert(b);
 			}
 		}
 		else {
 			// State 2. Place the body in the right subtree
-			if (b.getX() < centerX) {
-				if (b.getY() < centerY) {
-					upperLeft.insert(b);
-				}
-				else {
-					lowerLeft.insert(b);
-				}
+			if (b.getX() <= 0 || b.getX() >= xl || b.getY() <= 0 || b.getY() >= yl) {
+				// Body falls outside of visible screen.
+				// TODO: This needs to be resolved by fixing the co-ordinate system.
+				return false; 
 			}
 			else {
-				if (b.getY() < centerY) {
-					lowerRight.insert(b);
+				if (b.getX() < centerX) {		// Left
+					if (b.getY() < centerY) {	// Upper left
+						upperLeft.insert(b);
+					}
+					else {						// Lower left
+						lowerLeft.insert(b);
+					}
 				}
-				else {
-					lowerRight.insert(b);
-				} 
+				else {							// Right
+					if (b.getY() < centerY) {
+						upperRight.insert(b);	// Upper right
+					}
+					else {
+						lowerRight.insert(b);	// Lower right
+					} 
+				}
 			}
 		}
 		return true;
@@ -118,7 +131,7 @@ public class BHTree {
 			lowerLeft.draw(g);
 			lowerRight.draw(g);
 		}
-		g.draw(new Rectangle(xs, ys, centerX * 2 , centerY * 2));
+		g.draw(new Rectangle(xs, ys, xl - xs , yl - ys));
 	}
 
 }

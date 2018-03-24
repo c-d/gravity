@@ -89,9 +89,11 @@ public class Universe {
 			g.drawString("Velocity:" + (float)selectedBody.velocity.x + "," + selectedBody.velocity.y, 10, height - 55);
 		}
 		*/
-		g.setColor(Color.green);
-		BHTree.create(bodies, width, height).draw(g);
-		g.setColor(Color.green);
+		if (tree != null) {
+			g.setColor(Color.green);
+			tree.draw(g);
+			g.setColor(Color.green);
+		}
 	}
 
 	private void drawGravityLineBetweenBodies(Graphics g, Body b1, Body b2) {
@@ -128,6 +130,7 @@ public class Universe {
  			bodies.removeAll(destroyedBodies);
 			destroyedBodies.clear();
 		}
+		tree = BHTree.create(bodies, width, height);
 	}
 	
 	public void setFocus(int x, int y) {
