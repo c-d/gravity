@@ -1,6 +1,7 @@
 package app;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,8 @@ public class BHTree {
 	private float cmx = 0;
 	private float cmy = 0;
 	
+	private Map<Body, Float> gravityHistory;
+	
 	
 	/**
 	 * 
@@ -58,6 +61,7 @@ public class BHTree {
 		ys = ySmall;
 		yl = yLarge;
 		this.level = level;
+		gravityHistory = new HashMap<Body, Float>();
 	}
 	
 	public static BHTree create(List<Body> bodies, int width, int height) {
@@ -82,7 +86,10 @@ public class BHTree {
 				// As a leaf the total mass is exactly the mass of the contained body.
 				mass = containedBody.getMass();
 				cmx = containedBody.getX() * mass;
-				cmx = containedBody.getY() * mass;
+				cmy = containedBody.getY() * mass;
+				if (Float.isNaN(cmx) || Float.isNaN(cmy)) {
+					System.out.println("NaN");
+				}
 				// Return early so mass is not added twice.
 				return true;
 			}
@@ -122,7 +129,10 @@ public class BHTree {
 			}
 			else {
 				cmx += b.getX() * b.getMass();
-				cmy += b.getX() * b.getMass();
+				cmy += b.getY() * b.getMass();
+				if (Float.isNaN(cmx) || Float.isNaN(cmy)) {
+					System.out.println("NaN");
+				}
 				mass += b.getMass();
 				if (b.getX() < centerX) {		// Left
 					if (b.getY() < centerY) {	// Upper left
@@ -198,14 +208,52 @@ public class BHTree {
 		}
 		*/
 	}
+	
+	/**
+	 * Draw the previously calculated gravity of other bodies towards THIS node.
+	 * @param g
+	 */
+	public void drawGravity(Graphics g) {
+		if (upperLeft != null) {
+			upperLeft.drawGravity(g);
+			upperRight.drawGravity(g);
+			lowerLeft.drawGravity(g);
+			lowerRight.drawGravity(g);
+		}
+		g.setLineWidth(4);
+		// We only store the history of bodies that we enacted gravity upon at this level.
+		// So we can safely assume every item in this collection should be drawn.
+		for (Body body : gravityHistory.keySet()) {
+			float gravity = gravityHistory.get(body);
+			float alpha = gravity * 1000;
+			if (alpha > 0.01) {
+				Color newColor = new Color(Config.COLOR_BODY.r, Config.COLOR_BODY.g, Config.COLOR_BODY.b, alpha);
+				g.setColor(newColor);
+				if (containedBody != null) {
+					g.drawLine(body.getX(), body.getY(), containedBody.getX(), containedBody.getY());
+				}
+				else 
+					g.drawLine(body.getX(), body.getY(), centerX, centerY);
+			}
+		}
+		g.resetLineWidth();
+	}
 
 	public void updateGravity(Body body) {
 		if (mass == 0 || (body == containedBody)) { 
 			return;
 		}
-		float x = cmx / mass;
-		float y = cmy / mass;
-		float size = ((xl - xs) + (yl - ys)) / 2;
+		float x, y, size;
+		if (containedBody != null) {
+			x = containedBody.getX();
+			y = containedBody.getY();
+			size = containedBody.getDiameter();
+		}
+		else {
+			x = cmx / mass;
+			y = cmy / mass;
+			size = ((xl - xs) + (yl - ys)) / 2;
+		}
 		float distance = distanceTo(body, x, y);
 		if (size / distance < Config.GRAVITATIONAL_ACCURACY) {
 			// Close enough
@@ -229,13 +277,22 @@ public class BHTree {
 	private void updateBodyGravity(Body body, float distance) {
 		float gravity = (mass * Config.GRAVITY_CONSTANT) / (distance * distance);
 		float angle = (float) Math.atan2(centerY - body.getY(), centerX - body.getX());
+		if (Float.isNaN(gravity) || Float.isNaN(distance)) {
+			System.out.println("NaN");
+		} 
 		body.enactGravity(gravity, angle);
+		// Maintain a history of gravities, used for drawing later.
+		gravityHistory.put(body, gravity);
 	}
 	
 	private float distanceTo(Body body, float x, float y) {
-		return (float) Math.sqrt(
-				(x - body.getX()) * (x - body.getX()) + 
-				(y - body.getY() * (y - body.getY())));
+		float result = (float) Math.sqrt(
+				Math.pow(x - body.getX(), 2) + 
+				Math.pow(y - body.getY(), 2));
+		if (Float.isNaN(result)) {
+			System.out.println("NaN");
+		}
+		return result;
 	}
 
 }

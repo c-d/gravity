@@ -71,13 +71,17 @@ public class Universe {
 	public void draw(Graphics g) {
 		for(Body b1 : bodies) {
 			b1.draw(g);
+			/*
 			for (Body b2 : bodies) {
 				if (b1 != b2) {
 					drawGravityLineBetweenBodies(g, b1, b2);
 				}
 			}
-			drawGravityLineBetweenBodies(g, b1, sun);
+			*/
+			//drawGravityLineBetweenBodies(g, b1, sun);
 		}
+		if (tree != null)
+			tree.drawGravity(g);
 		sun.draw(g);
 		g.setColor(Config.COLOR_TEXT);
 		//g.drawString("Sun mass: " + sun.getMass(), 10, height - 35);
@@ -94,7 +98,7 @@ public class Universe {
 			tree.draw(g);
 		}
 	}
-
+/*
 	private void drawGravityLineBetweenBodies(Graphics g, Body b1, Body b2) {
 		// TODO: This is now inaccurate
 		float gravity = b1.getGravityMagnitudeTowardBody(b2);
@@ -104,10 +108,11 @@ public class Universe {
 			g.setColor(newColor);
 			g.setLineWidth(4);
 			
-			//g.drawLine(b1.getX(), b1.getY(), b2.getX(), b2.getY());
+			g.drawLine(b1.getX(), b1.getY(), b2.getX(), b2.getY());
 			g.resetLineWidth();
 		}
 	}
+	*/
 	
 	public void update() {
 		/*
