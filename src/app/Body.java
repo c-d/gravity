@@ -89,6 +89,13 @@ public class Body {
 		velocity.add(gravity);
 	}
 	
+	public void enactGravity(float gravityMagnitude, float angle) {
+		Vector2f g = new Vector2f(0, 0);		
+		setVectorLength(g, gravityMagnitude);
+		setVectorAngle(g, angle);
+		velocity.add(g);
+	}
+	
 	public float getGravityMagnitudeTowardBody(Body other) {
  		float distance = distanceTo(other);
 		return (other.mass * Config.GRAVITY_CONSTANT) / (distance * distance);
@@ -131,5 +138,6 @@ public class Body {
 		vector.x = (float) (Math.cos(angle) * length);
 		vector.y = (float) (Math.sin(angle) * length);
 	}
+
 
 }

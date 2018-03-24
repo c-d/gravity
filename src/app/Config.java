@@ -31,11 +31,13 @@ public class Config {
 	// Too high and it will cause sling-shotting
 	// An alternative to increasing gravity is to increase the relative mass of all objects
 	public static final float GRAVITY_CONSTANT = 0.08f;
-	public static final float MASS_TO_SIZE_MULTIPLIER = 0.05f;
+	public static final float MASS_TO_SIZE_MULTIPLIER = 0.09f;
 
 	public static final float NODE_MASS_CHANGE_RATE = 0.5f;
 	// Too slow and new bodies will move directly into the sun, too fast and they will outrun gravity and escape
 	public static final float NODE_DEFAULT_VELOCITY = 0.5f;
+	
+	public static final float GRAVITATIONAL_ACCURACY = 0.9f;
 	
 	public static final float MAX_DISTANCE_FROM_SUN = 15000;
 	public static final float MAX_NUMBER_BODIES = 100;
@@ -44,4 +46,8 @@ public class Config {
 	public static final Color COLOR_SUN = new Color(220, 150, 70);
 	public static final Color COLOR_TEXT = Color.white;
 	public static final Color COLOR_BACKGROUND = new Color(0, 24, 43);
+	
+	public static final float QUAD_TREE_LINE_WIDTH_MOD = 0.01f;
+	public static final float QUAD_TREE_LINE_COLOR_MOD = 2f;
+	
 }

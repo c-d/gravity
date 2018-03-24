@@ -96,6 +96,7 @@ public class Universe {
 	}
 
 	private void drawGravityLineBetweenBodies(Graphics g, Body b1, Body b2) {
+		// TODO: This is now inaccurate
 		float gravity = b1.getGravityMagnitudeTowardBody(b2);
 		float alpha = gravity * 100;
 		if (alpha > 0.01) {
@@ -103,20 +104,17 @@ public class Universe {
 			g.setColor(newColor);
 			g.setLineWidth(4);
 			
-			//System.out.println(gravity + " - " + alpha);
-			g.drawLine(b1.getX(), b1.getY(), b2.getX(), b2.getY());
+			//g.drawLine(b1.getX(), b1.getY(), b2.getX(), b2.getY());
 			g.resetLineWidth();
 		}
 	}
 	
 	public void update() {
+		/*
 		for (Body b1 : bodies) {
 			for (Body b2 : bodies) {
 				if (b1 != b2) {
 					b1.gravitateToward(b2);
-					/*if (b1.checkForAbsorption(b2)) {
-						destroyedBodies.add(b1);
-					}*/
 				}
 			}
 			b1.gravitateToward(sun);
@@ -125,11 +123,26 @@ public class Universe {
 			}
 			b1.update();
 		}
+		*/
+		tree = BHTree.create(bodies, width, height);
+		for (Body body : bodies) {
+			if (body.getX() <= 0 || body.getX() >= width ||
+					body.getY() <= 0 || body.getY() >= height) {
+				destroyedBodies.add(body);
+				break;
+			}
+			tree.updateGravity(body);
+			body.gravitateToward(sun);
+			if (body.distanceTo(sun) > Config.MAX_DISTANCE_FROM_SUN) {
+				destroyedBodies.add(body);
+			}
+			body.update();
+		}
+		
 		if (!destroyedBodies.isEmpty()) {
  			bodies.removeAll(destroyedBodies);
 			destroyedBodies.clear();
 		}
-		tree = BHTree.create(bodies, width, height);
 	}
 
 	public void deleteBody(Body body) {

@@ -108,7 +108,7 @@ public class Game extends BasicGame {
 
 	public static void main(String[] args) {
 		try {
-			AppGameContainer appGC = new AppGameContainer(new Game("G"));
+			AppGameContainer appGC = new AppGameContainer(new Game("Gravity"));
 			appGC.setDisplayMode(screenWidth, screenHeight, false);
 			appGC.start();
 		}
