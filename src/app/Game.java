@@ -1,20 +1,12 @@
 package app;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.input.Mouse;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
@@ -23,7 +15,6 @@ public class Game extends BasicGame {
 	private static int screenWidth = 1280;
 	private static int screenHeight = 900;
 	private Universe world;
-	private Image bg;
 	private boolean pause = true;
 	private float zoomLevel = 1;
 	
@@ -63,21 +54,21 @@ public class Game extends BasicGame {
 	
 	private void processInput(GameContainer gc, int delta) {
 		Input input = gc.getInput();
-		boolean change = false;
 		Body node = world.getBodyAt(input.getMouseX(), input.getMouseY());
+		
+		// Mouse clicks
 		if (input.isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)) {
 			if (node == null) {
 				world.createBody(input.getMouseX(), input.getMouseY());
 			}
 			else node.increaseMass();
-			change = true;
 		}
 		if (input.isMouseButtonDown(Input.MOUSE_RIGHT_BUTTON)) {
 			if (node != null) {
 				node.decreaseMass();
 			}
-			change = true;
 		}
+		// Body manipulation
 		if (input.isKeyDown(Input.KEY_D)) {
 			if (node != null) {
 				world.deleteBody(node);
@@ -89,6 +80,8 @@ public class Game extends BasicGame {
 		if (input.isKeyPressed(Input.KEY_R)) {
 			world.createRandomBody();
 		}
+		
+		// UI manipulation
 		if (input.isKeyPressed(Input.KEY_SPACE)) {
 			pause = !pause;
 		}
@@ -108,13 +101,11 @@ public class Game extends BasicGame {
 			zoomLevel = 1;
 			System.out.println("New zoom level: " + zoomLevel);
 		}
-		if (change)
-			world.setFocus(input.getMouseX(), input.getMouseY());
 	}
 
 	public static void main(String[] args) {
 		try {
-			AppGameContainer appGC = new AppGameContainer(new Game("New game"));
+			AppGameContainer appGC = new AppGameContainer(new Game("G"));
 			appGC.setDisplayMode(screenWidth, screenHeight, false);
 			appGC.start();
 		}

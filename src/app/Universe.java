@@ -132,10 +132,6 @@ public class Universe {
 		}
 		tree = BHTree.create(bodies, width, height);
 	}
-	
-	public void setFocus(int x, int y) {
-		
-	}
 
 	public void deleteBody(Body body) {
 		bodies.remove(body);
