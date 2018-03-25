@@ -37,9 +37,11 @@ public class Config {
 	// Too slow and new bodies will move directly into the sun, too fast and they will outrun gravity and escape
 	public static final float NODE_DEFAULT_VELOCITY = 0.5f;
 	
-	public static final float GRAVITATIONAL_ACCURACY = 0.9f;
+	// Determines when to 'give up' on searching through a quad tree when calculating gravity.
+	// Higher -> less accurate gravity, but should be less computationally expensive (will accept a rougher approximation)
+	public static final float GRAVITATIONAL_FUDGE_FACTOR = 1f;
 	
-	public static final float MAX_DISTANCE_FROM_SUN = 15000;
+	//public static final float MAX_DISTANCE_FROM_SUN = 15000;
 	public static final float MAX_NUMBER_BODIES = 100;
 	
 	public static final Color COLOR_BODY = new Color(210, 235, 240); 
@@ -49,5 +51,9 @@ public class Config {
 	
 	public static final float QUAD_TREE_LINE_WIDTH_MOD = 0.01f;
 	public static final float QUAD_TREE_LINE_COLOR_MOD = 2f;
+	
+	// Could probably just be one variable, depends if we will ever have non-square universes
+	public static final int UNIVERSE_WIDTH = 60000;
+	public static final int UNIVERSE_HEIGHT = 60000;
 	
 }

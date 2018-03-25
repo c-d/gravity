@@ -10,8 +10,8 @@ import org.newdawn.slick.Graphics;
 public class Universe {
 	
 	public static final int CELL_SIZE = 32;
-	private static int width;
-	private static int height;
+	private int width;
+	private int height;
 	
 	private static List<Body> bodies;
 	private static List<Body> destroyedBodies;
@@ -30,8 +30,8 @@ public class Universe {
 	}
 	
 	public Universe(int width, int height) {
-		Universe.width = width;
-		Universe.height = height;
+		this.width = width;
+		this.height = height;
 		view = new View();
 		bodies = new ArrayList<Body>();
 		destroyedBodies = new ArrayList<Body>();
@@ -138,9 +138,6 @@ public class Universe {
 			}
 			tree.updateGravity(body);
 			body.gravitateToward(sun);
-			if (body.distanceTo(sun) > Config.MAX_DISTANCE_FROM_SUN) {
-				destroyedBodies.add(body);
-			}
 			body.update();
 		}
 		

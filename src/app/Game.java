@@ -27,7 +27,9 @@ public class Game extends BasicGame {
 		//bg.draw(0, 0, screenWidth, screenHeight);
 		g.setBackground(Config.COLOR_BACKGROUND);
 		// This does not function well with input (mouse co-ords not translated)
-		g.translate((screenWidth / 2) - (screenWidth / 2) * zoomLevel, (screenHeight / 2) - (screenHeight / 2) * zoomLevel);
+		//g.translate(screenWidth / zoomLevel / 2, 
+		//		screenHeight / zoomLevel / 2);
+		g.translate((screenWidth / 2) - (Config.UNIVERSE_WIDTH / 2) * zoomLevel, (screenHeight / 2) - (Config.UNIVERSE_HEIGHT / 2) * zoomLevel);
 		g.scale(zoomLevel, zoomLevel);
 		world.draw(g);
 		g.resetTransform();
@@ -38,7 +40,7 @@ public class Game extends BasicGame {
 	@Override
 	public void init(GameContainer gc) throws SlickException {
 		BodyNames.init();
-		world = new Universe(screenWidth, screenHeight);
+		world = new Universe(Config.UNIVERSE_WIDTH, Config.UNIVERSE_HEIGHT);
 	}
 
 	@Override
@@ -52,14 +54,26 @@ public class Game extends BasicGame {
 		world.update();
 	}
 	
+	private int getMouseX(Input input) {
+		//int result = (int) ((input.getMouseX() + ((Config.UNIVERSE_WIDTH - screenWidth)) / 2));
+		//result = (int) (result);
+		//System.out.println("X: " + input.getMouseX() + ", " + result + "    Screen-offset: " + ((Config.UNIVERSE_WIDTH - screenWidth) * zoomLevel / 2));
+		//return (int) result; 
+		return (int) ((input.getMouseX() + (Config.UNIVERSE_WIDTH - screenWidth) / 2)); 
+	}	
+	
+	private int getMouseY(Input input) {
+		return (int) ((input.getMouseY() + (Config.UNIVERSE_HEIGHT - screenHeight) / 2)); 
+	}
+	
 	private void processInput(GameContainer gc, int delta) {
 		Input input = gc.getInput();
-		Body node = world.getBodyAt(input.getMouseX(), input.getMouseY());
+		Body node = world.getBodyAt(getMouseX(input), getMouseY(input));
 		
 		// Mouse clicks
 		if (input.isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)) {
 			if (node == null) {
-				world.createBody(input.getMouseX(), input.getMouseY());
+				world.createBody(getMouseX(input), getMouseY(input));
 			}
 			else node.increaseMass();
 		}
@@ -89,7 +103,7 @@ public class Game extends BasicGame {
 			stepUpdate(gc, delta);
 		}
 		// Zoom events
-		if (input.isKeyDown(Input.KEY_DOWN) && zoomLevel > 0) {
+		if (input.isKeyDown(Input.KEY_DOWN) && zoomLevel > 0.02) {
 			zoomLevel -= 0.01;
 			System.out.println("New zoom level: " + zoomLevel);
 		}

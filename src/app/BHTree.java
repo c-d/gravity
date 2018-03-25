@@ -255,7 +255,7 @@ public class BHTree {
 			size = ((xl - xs) + (yl - ys)) / 2;
 		}
 		float distance = distanceTo(body, x, y);
-		if (size / distance < Config.GRAVITATIONAL_ACCURACY) {
+		if (size / distance < Config.GRAVITATIONAL_FUDGE_FACTOR) {
 			// Close enough
 			updateBodyGravity(body, distance);
 		}
