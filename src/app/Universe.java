@@ -1,7 +1,9 @@
 package app;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.newdawn.slick.Color;
@@ -15,6 +17,7 @@ public class Universe {
 	
 	private static List<Body> bodies;
 	private static List<Body> destroyedBodies;
+	private static Map<Body, Body> collisions;
 	private Body sun;
 	private Body selectedBody;
 	
@@ -36,6 +39,7 @@ public class Universe {
 		bodies = new ArrayList<Body>();
 		destroyedBodies = new ArrayList<Body>();
 		sun = new Body("Sol", width / 2, height / 2, 0, 0, Config.SUN_MASS, Config.COLOR_SUN);
+		collisions = new HashMap<Body, Body>();
 	}
 
 	public Body createRandomBody() {
@@ -141,10 +145,32 @@ public class Universe {
 			body.update();
 		}
 		
+		processCollisions();
+		
 		if (!destroyedBodies.isEmpty()) {
  			bodies.removeAll(destroyedBodies);
 			destroyedBodies.clear();
 		}
+	}
+	
+	/**
+	 * Process the pairs of bodies in external quads.
+	 * We don't really care if they're exactly in the same position, the fact that they were in the same external quad is enough.
+	 */
+	private void processCollisions() {
+		List<Body> alreadyProcessed = new ArrayList<Body>();	// Don't want to double-count a destroyed body.
+		for (Body b1 : collisions.keySet()) {
+			Body b2 = collisions.get(b1);
+			if (b1.getMass() > b2.getMass() && !alreadyProcessed.contains(b2)) {
+				b1.absorbBody(b2);
+				destroyedBodies.add(b2);
+			}
+			else if (!alreadyProcessed.contains(b1)){
+				b2.absorbBody(b1);
+				destroyedBodies.add(b1);
+			}
+		}
+		collisions.clear();
 	}
 
 	public void deleteBody(Body body) {
@@ -161,6 +187,10 @@ public class Universe {
 
 	public void toggleDrawQuadTree() {
 		drawQuadTree = !drawQuadTree;
+	}
+
+	public static void notifyCollision(Body b1, Body b2) {
+		collisions.put(b1, b2);
 	}
 
 }

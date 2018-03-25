@@ -98,10 +98,9 @@ public class BHTree {
 					// Two points in exactly the same position - will infinitely recurse.
 					return false;
 				} 
-				if (xl - xs <= 1 || yl - ys <= 1) {
+				if (xl - xs <= Config.QUAD_TREE_MIN_QUAD_SIZE || yl - ys <= 10) {
 					// We can't split this tree any further.
-					// Will just need to give up (eventually gravity will fling close bodies apart anyway so this will resolve itself).
-					// TODO: If gravity requires tree nodes... will we be able to calculate differences between bodies like this?
+					Universe.notifyCollision(containedBody, b);
 					return false;
 				}
 				// BHTree(xLeft, yTop, xRight, yBottom

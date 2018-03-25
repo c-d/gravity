@@ -55,5 +55,8 @@ public class Config {
 	// Could probably just be one variable, depends if we will ever have non-square universes
 	public static final int UNIVERSE_WIDTH = 60000;
 	public static final int UNIVERSE_HEIGHT = 60000;
+	// When a quad tree is divided down to minimum size, and new bodies entering the quad will cause a collision, and the smallest
+	// of the two bodies will be consumed by the largest. Increasing this should also improve performance.
+	public static final int QUAD_TREE_MIN_QUAD_SIZE = 20;
 	
 }

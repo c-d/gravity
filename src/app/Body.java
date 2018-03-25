@@ -116,20 +116,10 @@ public class Body {
 		return (other.mass * Config.GRAVITY_CONSTANT) / (distance * distance);
 	}
 	
-	/**
-	 * Returns true if this body has been absorbed by other.
-	 * @param other
-	 * @return
-	 */
-	public boolean checkForAbsorption(Body other) {
-		float distance = distanceTo(other);
- 		// If center of this body is contained within other body, check if the entirety is
- 		if (distance < other.circle.radius) {
-			System.out.println("ABSORBED BY OTHER BODY");
-			other.updateMass(mass);
-			return true;
- 		}
- 		return false;
+
+	public void absorbBody(Body other) {
+		System.out.println(name + " absorbed " + other.name + " and gained " + other.getMass() + " mass!");
+		updateMass(other.getMass());
 	}
 	
 	private float angleTo(Body other) {
