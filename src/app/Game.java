@@ -94,6 +94,9 @@ public class Game extends BasicGame {
 		if (input.isKeyPressed(Input.KEY_R)) {
 			world.createRandomBody();
 		}
+		if (input.isKeyDown(Input.KEY_T)) {
+			world.createRandomBody();
+		}
 		
 		// UI manipulation
 		if (input.isKeyPressed(Input.KEY_SPACE)) {
@@ -103,12 +106,12 @@ public class Game extends BasicGame {
 			stepUpdate(gc, delta);
 		}
 		// Zoom events
-		if (input.isKeyDown(Input.KEY_DOWN) && zoomLevel > 0.02) {
-			zoomLevel -= 0.01;
+		if (input.isKeyDown(Input.KEY_DOWN) && zoomLevel > 0.015) {
+			zoomLevel -= 0.001;
 			System.out.println("New zoom level: " + zoomLevel);
 		}
 		if (input.isKeyDown(Input.KEY_UP)) {
-			zoomLevel += 0.01;
+			zoomLevel += 0.001;
 			System.out.println("New zoom level: " + zoomLevel);
 		}
 		if (input.isKeyDown(Input.KEY_RCONTROL)) {

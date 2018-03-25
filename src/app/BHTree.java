@@ -276,6 +276,7 @@ public class BHTree {
 	private void updateBodyGravity(Body body, float distance) {
 		float gravity = (mass * Config.GRAVITY_CONSTANT) / (distance * distance);
 		float angle = (float) Math.atan2(centerY - body.getY(), centerX - body.getX());
+		//float angle = (float) Math.sqrt(Math.pow(centerX - body.getX(), 2) + Math.pow(centerY - body.getY(), 2));
 		if (Float.isNaN(gravity) || Float.isNaN(distance)) {
 			System.out.println("NaN");
 		} 

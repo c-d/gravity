@@ -66,10 +66,12 @@ public class Body {
 	}
 
 	public void draw(Graphics g) {
-		g.setAntiAlias(true);
 		g.setColor(color);
-		g.fill(circle);
-		g.setAntiAlias(false);
+		if (mass > Config.NODE_MIN_DRAW_MASS) {
+			g.setAntiAlias(true);
+			g.fill(circle);
+			
+		}
 		g.drawString(name, getX() + circle.radius, getY() + circle.radius / 2);
 		
 		// Draw velocity
@@ -123,7 +125,9 @@ public class Body {
 	}
 	
 	private float angleTo(Body other) {
-		return (float) Math.atan2(other.getY() - this.getY(), other.getX() - this.getX());
+		//float sqrt = (float) Math.sqrt(Math.pow(other.getX() - getX(), 2) + Math.pow(other.getY() - getY(), 2));
+		float atan = (float) Math.atan2(other.getY() - this.getY(), other.getX() - this.getX());
+		return atan;
 	}
 	
 	public float distanceTo(Body other) {

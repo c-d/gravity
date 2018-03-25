@@ -21,21 +21,14 @@ public class Universe {
 	private Body sun;
 	private Body selectedBody;
 	
-	private View view;
 	private Random rand = new Random();
 	
 	private BHTree tree;
 	private boolean drawQuadTree = true;
 	
-	public class View {
-		private int xOffset = 0;
-		private int yOffset = 0;
-	}
-	
 	public Universe(int width, int height) {
 		this.width = width;
 		this.height = height;
-		view = new View();
 		bodies = new ArrayList<Body>();
 		destroyedBodies = new ArrayList<Body>();
 		sun = new Body("Sol", width / 2, height / 2, 0, 0, Config.SUN_MASS, Config.COLOR_SUN);
@@ -82,7 +75,7 @@ public class Universe {
 				}
 			}
 			*/
-			//drawGravityLineBetweenBodies(g, b1, sun);
+			drawGravityLineBetweenBodies(g, b1, sun);
 		}
 		if (tree != null)
 			tree.drawGravity(g);
@@ -102,9 +95,9 @@ public class Universe {
 			tree.draw(g);
 		}
 	}
-/*
+
 	private void drawGravityLineBetweenBodies(Graphics g, Body b1, Body b2) {
-		// TODO: This is now inaccurate
+		// Really only useful for the sun...
 		float gravity = b1.getGravityMagnitudeTowardBody(b2);
 		float alpha = gravity * 100;
 		if (alpha > 0.01) {
@@ -116,7 +109,7 @@ public class Universe {
 			g.resetLineWidth();
 		}
 	}
-	*/
+	
 	
 	public void update() {
 		/*
