@@ -31,7 +31,7 @@ public class Body {
 	}
 	
 	protected float getMass() {
-		return circle.radius;
+		return mass;
 	}
 
 	public Body(String name, int x, int y, float speed, float direction) {
@@ -39,6 +39,9 @@ public class Body {
 	}
 	
 	public Body(String name, int x, int y, float speed, float direction, float mass, Color color) {
+		if (Float.isNaN(x) || Float.isNaN(y)) {
+			System.out.println("NaN");
+		}
 		circle = new Circle((float)x, (float)y, mass * Config.MASS_TO_SIZE_MULTIPLIER);
 		position = new Vector2f((float)x, (float)y);
 		this.velocity = new Vector2f();
@@ -68,10 +71,19 @@ public class Body {
 		g.fill(circle);
 		g.setAntiAlias(false);
 		g.drawString(name, getX() + circle.radius, getY() + circle.radius / 2);
+		
+		// Draw velocity
+		Vector2f projectedPosition = new Vector2f(getX(), getY());
+		projectedPosition = projectedPosition.add(velocity);
+		//setVectorLength(projectedPosition, 1);
+		g.drawLine(getX(), getY(), projectedPosition.getX(), projectedPosition.getY());
 	}
 	
 	public void update() {
-		position.add(velocity);
+ 		position.add(velocity);
+		if (Float.isNaN(position.x) || Float.isNaN(position.y)) {
+			System.out.println("NaN");
+		}
 		circle.setCenterX(position.x);
 		circle.setCenterY(position.y);
 		age += 0.01;
@@ -89,25 +101,25 @@ public class Body {
 		velocity.add(gravity);
 	}
 	
+	public void enactGravity(float gravityMagnitude, float angle) {
+		if (Float.isNaN(gravityMagnitude) || Float.isNaN(angle)) {
+			System.out.println("NaN");
+		}
+		Vector2f g = new Vector2f(0, 0);		
+		setVectorLength(g, gravityMagnitude);
+		setVectorAngle(g, angle);
+		velocity.add(g);
+	}
+	
 	public float getGravityMagnitudeTowardBody(Body other) {
  		float distance = distanceTo(other);
 		return (other.mass * Config.GRAVITY_CONSTANT) / (distance * distance);
 	}
 	
-	/**
-	 * Returns true if this body has been absorbed by other.
-	 * @param other
-	 * @return
-	 */
-	public boolean checkForAbsorption(Body other) {
-		float distance = distanceTo(other);
- 		// If center of this body is contained within other body, check if the entirety is
- 		if (distance < other.circle.radius) {
-			System.out.println("ABSORBED BY OTHER BODY");
-			other.updateMass(mass);
-			return true;
- 		}
- 		return false;
+
+	public void absorbBody(Body other) {
+		System.out.println(name + " absorbed " + other.name + " and gained " + other.getMass() + " mass!");
+		updateMass(other.getMass());
 	}
 	
 	private float angleTo(Body other) {
@@ -131,5 +143,10 @@ public class Body {
 		vector.x = (float) (Math.cos(angle) * length);
 		vector.y = (float) (Math.sin(angle) * length);
 	}
+
+	public float getDiameter() {
+		return circle.getRadius() * 2;
+	}
+
 
 }

@@ -1,7 +1,9 @@
 package app;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.newdawn.slick.Color;
@@ -10,11 +12,12 @@ import org.newdawn.slick.Graphics;
 public class Universe {
 	
 	public static final int CELL_SIZE = 32;
-	private static int width;
-	private static int height;
+	private int width;
+	private int height;
 	
 	private static List<Body> bodies;
 	private static List<Body> destroyedBodies;
+	private static Map<Body, Body> collisions;
 	private Body sun;
 	private Body selectedBody;
 	
@@ -22,6 +25,7 @@ public class Universe {
 	private Random rand = new Random();
 	
 	private BHTree tree;
+	private boolean drawQuadTree = true;
 	
 	public class View {
 		private int xOffset = 0;
@@ -29,12 +33,13 @@ public class Universe {
 	}
 	
 	public Universe(int width, int height) {
-		Universe.width = width;
-		Universe.height = height;
+		this.width = width;
+		this.height = height;
 		view = new View();
 		bodies = new ArrayList<Body>();
 		destroyedBodies = new ArrayList<Body>();
 		sun = new Body("Sol", width / 2, height / 2, 0, 0, Config.SUN_MASS, Config.COLOR_SUN);
+		collisions = new HashMap<Body, Body>();
 	}
 
 	public Body createRandomBody() {
@@ -70,13 +75,17 @@ public class Universe {
 	public void draw(Graphics g) {
 		for(Body b1 : bodies) {
 			b1.draw(g);
+			/*
 			for (Body b2 : bodies) {
 				if (b1 != b2) {
 					drawGravityLineBetweenBodies(g, b1, b2);
 				}
 			}
-			drawGravityLineBetweenBodies(g, b1, sun);
+			*/
+			//drawGravityLineBetweenBodies(g, b1, sun);
 		}
+		if (tree != null)
+			tree.drawGravity(g);
 		sun.draw(g);
 		g.setColor(Config.COLOR_TEXT);
 		//g.drawString("Sun mass: " + sun.getMass(), 10, height - 35);
@@ -89,14 +98,13 @@ public class Universe {
 			g.drawString("Velocity:" + (float)selectedBody.velocity.x + "," + selectedBody.velocity.y, 10, height - 55);
 		}
 		*/
-		if (tree != null) {
-			g.setColor(Color.green);
+		if (drawQuadTree && tree != null) {
 			tree.draw(g);
-			g.setColor(Color.green);
 		}
 	}
-
+/*
 	private void drawGravityLineBetweenBodies(Graphics g, Body b1, Body b2) {
+		// TODO: This is now inaccurate
 		float gravity = b1.getGravityMagnitudeTowardBody(b2);
 		float alpha = gravity * 100;
 		if (alpha > 0.01) {
@@ -104,20 +112,18 @@ public class Universe {
 			g.setColor(newColor);
 			g.setLineWidth(4);
 			
-			//System.out.println(gravity + " - " + alpha);
 			g.drawLine(b1.getX(), b1.getY(), b2.getX(), b2.getY());
 			g.resetLineWidth();
 		}
 	}
+	*/
 	
 	public void update() {
+		/*
 		for (Body b1 : bodies) {
 			for (Body b2 : bodies) {
 				if (b1 != b2) {
 					b1.gravitateToward(b2);
-					/*if (b1.checkForAbsorption(b2)) {
-						destroyedBodies.add(b1);
-					}*/
 				}
 			}
 			b1.gravitateToward(sun);
@@ -126,11 +132,45 @@ public class Universe {
 			}
 			b1.update();
 		}
+		*/
+		tree = BHTree.create(bodies, width, height);
+		for (Body body : bodies) {
+			if (body.getX() <= 0 || body.getX() >= width ||
+					body.getY() <= 0 || body.getY() >= height) {
+				destroyedBodies.add(body);
+				break;
+			}
+			tree.updateGravity(body);
+			body.gravitateToward(sun);
+			body.update();
+		}
+		
+		processCollisions();
+		
 		if (!destroyedBodies.isEmpty()) {
  			bodies.removeAll(destroyedBodies);
 			destroyedBodies.clear();
 		}
-		tree = BHTree.create(bodies, width, height);
+	}
+	
+	/**
+	 * Process the pairs of bodies in external quads.
+	 * We don't really care if they're exactly in the same position, the fact that they were in the same external quad is enough.
+	 */
+	private void processCollisions() {
+		List<Body> alreadyProcessed = new ArrayList<Body>();	// Don't want to double-count a destroyed body.
+		for (Body b1 : collisions.keySet()) {
+			Body b2 = collisions.get(b1);
+			if (b1.getMass() > b2.getMass() && !alreadyProcessed.contains(b2)) {
+				b1.absorbBody(b2);
+				destroyedBodies.add(b2);
+			}
+			else if (!alreadyProcessed.contains(b1)){
+				b2.absorbBody(b1);
+				destroyedBodies.add(b1);
+			}
+		}
+		collisions.clear();
 	}
 
 	public void deleteBody(Body body) {
@@ -143,6 +183,14 @@ public class Universe {
 
 	public int getNumberOfBodies() {
 		return bodies.size();
+	}
+
+	public void toggleDrawQuadTree() {
+		drawQuadTree = !drawQuadTree;
+	}
+
+	public static void notifyCollision(Body b1, Body b2) {
+		collisions.put(b1, b2);
 	}
 
 }

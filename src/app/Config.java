@@ -31,17 +31,32 @@ public class Config {
 	// Too high and it will cause sling-shotting
 	// An alternative to increasing gravity is to increase the relative mass of all objects
 	public static final float GRAVITY_CONSTANT = 0.08f;
-	public static final float MASS_TO_SIZE_MULTIPLIER = 0.05f;
+	public static final float MASS_TO_SIZE_MULTIPLIER = 0.09f;
 
 	public static final float NODE_MASS_CHANGE_RATE = 0.5f;
 	// Too slow and new bodies will move directly into the sun, too fast and they will outrun gravity and escape
 	public static final float NODE_DEFAULT_VELOCITY = 0.5f;
 	
-	public static final float MAX_DISTANCE_FROM_SUN = 15000;
+	// Determines when to 'give up' on searching through a quad tree when calculating gravity.
+	// Higher -> less accurate gravity, but should be less computationally expensive (will accept a rougher approximation)
+	public static final float GRAVITATIONAL_FUDGE_FACTOR = 1f;
+	
+	//public static final float MAX_DISTANCE_FROM_SUN = 15000;
 	public static final float MAX_NUMBER_BODIES = 100;
 	
 	public static final Color COLOR_BODY = new Color(210, 235, 240); 
 	public static final Color COLOR_SUN = new Color(220, 150, 70);
 	public static final Color COLOR_TEXT = Color.white;
 	public static final Color COLOR_BACKGROUND = new Color(0, 24, 43);
+	
+	public static final float QUAD_TREE_LINE_WIDTH_MOD = 0.01f;
+	public static final float QUAD_TREE_LINE_COLOR_MOD = 2f;
+	
+	// Could probably just be one variable, depends if we will ever have non-square universes
+	public static final int UNIVERSE_WIDTH = 60000;
+	public static final int UNIVERSE_HEIGHT = 60000;
+	// When a quad tree is divided down to minimum size, and new bodies entering the quad will cause a collision, and the smallest
+	// of the two bodies will be consumed by the largest. Increasing this should also improve performance.
+	public static final int QUAD_TREE_MIN_QUAD_SIZE = 20;
+	
 }
