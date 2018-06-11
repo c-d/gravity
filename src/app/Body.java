@@ -1,11 +1,15 @@
 package app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lwjgl.util.Point;
 import org.lwjgl.util.vector.Vector;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Vector2f;
+
 
 public class Body {
 	
@@ -17,6 +21,8 @@ public class Body {
 	protected String name;
 	float age = 0.0f;
 	protected Color color;
+	List<Circle> trail;
+
 	
 	public String toString() {
 		return name + " [" + getX() + ", " + getY() + "]";
@@ -39,9 +45,6 @@ public class Body {
 	}
 	
 	public Body(String name, int x, int y, float speed, float direction, float mass, Color color) {
-		if (Float.isNaN(x) || Float.isNaN(y)) {
-			System.out.println("NaN");
-		}
 		circle = new Circle((float)x, (float)y, mass * Config.MASS_TO_SIZE_MULTIPLIER);
 		position = new Vector2f((float)x, (float)y);
 		this.velocity = new Vector2f();
@@ -50,6 +53,12 @@ public class Body {
 		this.mass = mass;
 		this.name = name;
 		this.color = color;
+		trail = new ArrayList<Circle>();
+	}
+	
+	public Body(String name, int x, int y, float speed, float direction, float mass, float sizeOverride, Color color) {
+		this(name, x, y, speed, direction, mass, color);
+		circle = new Circle(circle.getCenterX(), circle.getCenterY(), sizeOverride);
 	}
 
 	private void updateMass(float diff) {
@@ -70,7 +79,19 @@ public class Body {
 		if (mass > Config.NODE_MIN_DRAW_MASS) {
 			g.setAntiAlias(true);
 			g.fill(circle);
-			
+			if (Config.DRAW_TRAIL) {
+				// Draw trail
+				if (!trail.isEmpty()) {
+					float alphaSplit = 1.0f / (trail.size() / 2);
+					Color trailColor = color;
+					for (int i = trail.size() - 1; i >= 0; i -= 1) {
+						Circle trailCircle = trail.get(i);
+						trailColor = new Color(trailColor.r, trailColor.g, trailColor.b, trailColor.a - alphaSplit);
+						g.setColor(trailColor);
+						g.fill(trailCircle);
+					}
+				}
+			}
 		}
 		g.drawString(name, getX() + circle.radius, getY() + circle.radius / 2);
 		
@@ -82,10 +103,13 @@ public class Body {
 	}
 	
 	public void update() {
- 		position.add(velocity);
-		if (Float.isNaN(position.x) || Float.isNaN(position.y)) {
-			System.out.println("NaN");
+		if (Config.DRAW_TRAIL) {
+			trail.add(new Circle(getX(), getY(), circle.radius));
+			if (trail.size() > 50) {
+				trail.remove(0);
+			}
 		}
+ 		position.add(velocity);
 		circle.setCenterX(position.x);
 		circle.setCenterY(position.y);
 		age += 0.01;
@@ -120,8 +144,10 @@ public class Body {
 	
 
 	public void absorbBody(Body other) {
-		System.out.println(name + " absorbed " + other.name + " and gained " + other.getMass() + " mass!");
-		updateMass(other.getMass());
+		if (Universe.random.nextInt() % 3 == 0) {	// 1:3 chance
+			System.out.println(name + " absorbed " + other.name + " and gained " + other.getMass() + " mass!");
+			updateMass(other.getMass());
+		}
 	}
 	
 	private float angleTo(Body other) {

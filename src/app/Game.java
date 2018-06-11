@@ -33,6 +33,7 @@ public class Game extends BasicGame {
 		g.scale(zoomLevel, zoomLevel);
 		world.draw(g);
 		g.resetTransform();
+		g.setColor(Config.COLOR_WHITE);
 		g.drawString("Bodies: " + world.getNumberOfBodies(), 10, screenHeight - 20);
 		g.drawString("Zoom: " + (int)(zoomLevel * 100) + "%", 10, screenHeight - 35);
 	}
@@ -41,6 +42,8 @@ public class Game extends BasicGame {
 	public void init(GameContainer gc) throws SlickException {
 		BodyNames.init();
 		world = new Universe(Config.UNIVERSE_WIDTH, Config.UNIVERSE_HEIGHT);
+		gc.setTargetFrameRate(100);
+		gc.setAlwaysRender(true);
 	}
 
 	@Override

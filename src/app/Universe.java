@@ -21,7 +21,7 @@ public class Universe {
 	private Body sun;
 	private Body selectedBody;
 	
-	private Random rand = new Random();
+	protected static Random random = new Random();
 	
 	private BHTree tree;
 	private boolean drawQuadTree = true;
@@ -31,13 +31,13 @@ public class Universe {
 		this.height = height;
 		bodies = new ArrayList<Body>();
 		destroyedBodies = new ArrayList<Body>();
-		sun = new Body("Sol", width / 2, height / 2, 0, 0, Config.SUN_MASS, Config.COLOR_SUN);
+		sun = new Body("Sol", width / 2, height / 2, 0, 0, Config.SUN_MASS, 10, Config.COLOR_SUN);
 		collisions = new HashMap<Body, Body>();
 	}
 
 	public Body createRandomBody() {
 		Body body = createBody((int) (Math.random() * width), (int) (Math.random()  * height));
-		int amount = rand.nextInt(400);
+		int amount = random.nextInt(400);
 		while (amount-- > 0 )
 			body.increaseMass();
 		return body;
@@ -50,7 +50,7 @@ public class Universe {
 	}
 	
 	private float getRandomDirection() {
-		return rand.nextFloat() * 6;
+		return random.nextFloat() * 6;
 	}
 	
 	public Body getBodyAt(int x, int y) {
@@ -75,10 +75,9 @@ public class Universe {
 				}
 			}
 			*/
-			drawGravityLineBetweenBodies(g, b1, sun);
+			if (drawQuadTree)
+				drawGravityLineBetweenBodies(g, b1, sun);
 		}
-		if (tree != null)
-			tree.drawGravity(g);
 		sun.draw(g);
 		g.setColor(Config.COLOR_TEXT);
 		//g.drawString("Sun mass: " + sun.getMass(), 10, height - 35);
@@ -93,6 +92,7 @@ public class Universe {
 		*/
 		if (drawQuadTree && tree != null) {
 			tree.draw(g);
+			tree.drawGravity(g);
 		}
 	}
 

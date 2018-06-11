@@ -25,17 +25,17 @@ public class Config {
 	 */
 
 	// A heavier sun generally needs to be offset by lower gravity 
-	public static final float SUN_MASS = 600;
-	public static final float NODE_INITIAL_MASS = 20f;
+	public static final float SUN_MASS = 50000;
+	public static final float NODE_INITIAL_MASS = 200f;
 	// If sun mass is closer to other object mass, then higher gravity will create more situations where bodies orbit around each other (clusters)
 	// Too high and it will cause sling-shotting
 	// An alternative to increasing gravity is to increase the relative mass of all objects
-	public static final float GRAVITY_CONSTANT = 0.08f;
-	public static final float MASS_TO_SIZE_MULTIPLIER = 0.09f;
+	public static final float GRAVITY_CONSTANT = 0.07f;
+	public static final float MASS_TO_SIZE_MULTIPLIER = 0.01f;
 
 	public static final float NODE_MASS_CHANGE_RATE = 0.5f;
 	// Too slow and new bodies will move directly into the sun, too fast and they will outrun gravity and escape
-	public static final float NODE_DEFAULT_VELOCITY = 0.5f;
+	public static final float NODE_DEFAULT_VELOCITY = 4.2f;
 	// Bodies with mass less than this won't have their circles drawn (but labels still will be)
 	public static final float NODE_MIN_DRAW_MASS = 50;
 	
@@ -60,5 +60,8 @@ public class Config {
 	// When a quad tree is divided down to minimum size, and new bodies entering the quad will cause a collision, and the smallest
 	// of the two bodies will be consumed by the largest. Increasing this should also improve performance.
 	public static final int QUAD_TREE_MIN_QUAD_SIZE = 20;
+	
+	public static final Color COLOR_WHITE = new Color(255, 255, 255);
+	public static final boolean DRAW_TRAIL = false;
 	
 }
